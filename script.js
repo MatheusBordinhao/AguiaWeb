@@ -399,6 +399,169 @@ function mostrarNotificacaoTeste() {
 }
 
 /**
+ * Integração Gemini (browser) para interpretação de imagens
+ * - Persiste API key e modelo em localStorage (prefixo aguia_)
+ * - Envia a imagem via inlineData para o endpoint generateContent
+ */
+(function configurarGeminiUI() {
+  const keyInput = document.getElementById('geminiApiKey');
+  const modelSelect = document.getElementById('geminiModel');
+  const fileInput = document.getElementById('geminiImage');
+  const preview = document.getElementById('geminiPreview');
+  const btnInterpretar = document.getElementById('btnInterpretarImagem');
+  const btnLimpar = document.getElementById('btnLimparGemini');
+  const saida = document.getElementById('geminiResultado');
+
+  if (!keyInput || !modelSelect || !fileInput || !btnInterpretar || !saida) {
+    return; // UI não presente nesta página
+  }
+
+  // Carregar valores salvos
+  try {
+    const k = localStorage.getItem('aguia_gemini_api_key');
+    const m = localStorage.getItem('aguia_gemini_model');
+    if (k) keyInput.value = JSON.parse(k);
+    if (m) modelSelect.value = JSON.parse(m);
+  } catch {}
+
+  // Persistência sob demanda
+  keyInput.addEventListener('change', () => {
+    localStorage.setItem('aguia_gemini_api_key', JSON.stringify(keyInput.value || ''));
+  });
+  modelSelect.addEventListener('change', () => {
+    localStorage.setItem('aguia_gemini_model', JSON.stringify(modelSelect.value || 'gemini-1.5-flash'));
+  });
+
+  // Limpar resultado
+  if (btnLimpar) {
+    btnLimpar.addEventListener('click', () => {
+      saida.innerHTML = '<em style="color:#64748b;">Resultado da descrição aparecerá aqui...</em>';
+      if (preview) {
+        preview.innerHTML = '<em class="gemini-preview-placeholder">Nenhuma imagem selecionada.</em>';
+        preview.hidden = true;
+      }
+      if (fileInput) {
+        fileInput.value = '';
+      }
+    });
+  }
+
+  // Pré-visualização da imagem
+  let objectUrlAtual = null;
+  fileInput.addEventListener('change', () => {
+    const f = fileInput.files && fileInput.files[0];
+    if (!preview) return;
+    if (!f) {
+      preview.innerHTML = '<em class="gemini-preview-placeholder">Nenhuma imagem selecionada.</em>';
+      preview.hidden = true;
+      if (objectUrlAtual) { URL.revokeObjectURL(objectUrlAtual); objectUrlAtual = null; }
+      return;
+    }
+    // Regras básicas
+    if (!/^image\//i.test(f.type)) {
+      showNotification('Arquivo selecionado não é uma imagem.', 'error');
+      fileInput.value = '';
+      preview.innerHTML = '<em class="gemini-preview-placeholder">Nenhuma imagem selecionada.</em>';
+      preview.hidden = true;
+      return;
+    }
+    if (objectUrlAtual) { URL.revokeObjectURL(objectUrlAtual); objectUrlAtual = null; }
+    objectUrlAtual = URL.createObjectURL(f);
+    const sizeMB = (f.size / (1024 * 1024)).toFixed(2);
+    preview.innerHTML = `
+      <figure>
+        <img src="${objectUrlAtual}" alt="Pré-visualização da imagem selecionada" />
+        <figcaption>${f.name} • ${sizeMB} MB</figcaption>
+      </figure>
+    `;
+    preview.hidden = false;
+  });
+
+  // Clique para interpretar
+  btnInterpretar.addEventListener('click', async () => {
+    const apiKey = keyInput.value.trim();
+  const model = modelSelect ? modelSelect.value : 'gemini-2.5-flash';
+    const file = fileInput.files && fileInput.files[0];
+
+    // Validações básicas
+    if (!apiKey) {
+      showNotification('Informe sua API Key do Gemini.', 'error');
+      keyInput.focus();
+      return;
+    }
+    if (!file) {
+      showNotification('Selecione uma imagem para interpretar.', 'error');
+      fileInput.focus();
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) { // 4MB
+      showNotification('Imagem muito grande. Tente um arquivo menor que 4MB.', 'error');
+      return;
+    }
+
+    // Mostrar estado de carregamento
+    saida.textContent = 'Interpretando imagem com ' + model + '...';
+
+    try {
+      const b64 = await toBase64(file);
+      const mimeType = file.type || 'image/png';
+
+      // Monta o payload conforme API Generative Language v1beta
+      const body = {
+        contents: [
+          {
+            parts: [
+              { text: 'Gere uma descrição acessível, objetiva e detalhada desta imagem. Foque em conteúdo, contexto, ações e elementos relevantes para texto alternativo (alt).' },
+              { inlineData: { mimeType, data: b64.replace(/^data:[^;]+;base64,/, '') } }
+            ]
+          }
+        ]
+      };
+
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      // Trata possíveis respostas não JSON
+      const contentType = res.headers.get('content-type') || '';
+      let json;
+      if (contentType.includes('application/json')) {
+        json = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(text || 'Resposta não-JSON da API');
+      }
+
+      if (!res.ok) {
+        const msg = (json && (json.error && json.error.message)) || 'Falha na chamada da API';
+        throw new Error(msg);
+      }
+
+      // Extrair texto
+      const text = (json.candidates && json.candidates[0] && json.candidates[0].content && json.candidates[0].content.parts && json.candidates[0].content.parts[0] && json.candidates[0].content.parts[0].text) || '';
+      saida.textContent = text || 'Nenhuma descrição retornada.';
+    } catch (err) {
+      console.error('Erro Gemini:', err);
+      showNotification('Erro ao interpretar imagem: ' + (err && err.message ? err.message : 'Erro desconhecido'), 'error');
+      saida.textContent = 'Erro: ' + (err && err.message ? err.message : String(err));
+    }
+  });
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+})();
+
+/**
  * Mostra notificação de carregamento
  */
 function mostrarNotificacaoCarregamento() {

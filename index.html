@@ -157,6 +157,10 @@
                 alt="Equipe do projeto AGUIA"
                 style="border: 4px solid #2563eb"
               />
+              <p style="margin-top: 8px; font-size: 0.95rem; color: #374151;">
+                Orientador: <strong>Mateus Raeder</strong> — Coorientadora:
+                <strong>Fabiana Steimetz Bilha</strong>
+              </p>
             </div>
           </div>
         </div>
@@ -1260,6 +1264,47 @@
       </div>
     </section>
 
+    <!-- Seção de Teste Gemini Vision -->
+    <section id="gemini" class="gemini-section">
+      <div class="container gemini-container">
+        <h2 class="section-title">Teste de Interpretação de Imagem (Gemini)</h2>
+        <p class="section-subtitle">Use um modelo Gemini para gerar uma descrição acessível da imagem (texto alternativo detalhado).</p>
+  <form id="geminiForm" class="gemini-form" autocomplete="off">
+          <div class="form-group gemini-group">
+            <label for="geminiApiKey">API Key do Gemini <span aria-hidden="true">🔑</span></label>
+            <input type="password" id="geminiApiKey" name="geminiApiKey" placeholder="Sua API Key" aria-describedby="geminiKeyHelp" />
+            <small id="geminiKeyHelp" class="gemini-help">A chave é armazenada apenas localmente (localStorage). Nunca envie sua chave em formulários públicos.</small>
+          </div>
+
+          <div class="form-group gemini-group">
+            <label for="geminiModel" class="gemini-label">
+              <span class="gemini-label-text">Modelo Gemini</span>
+            </label>
+            <select id="geminiModel" name="geminiModel" class="gemini-select">
+              <option value="gemini-2.5-flash" selected>gemini-2.5-flash</option>
+            </select>
+          </div>
+
+          <div class="form-group gemini-group">
+            <label for="geminiImage">Imagem para interpretar</label>
+            <input type="file" id="geminiImage" name="geminiImage" accept="image/*" aria-describedby="geminiImageHelp" />
+            <small id="geminiImageHelp" class="gemini-help">Formatos suportados (PNG, JPG, JPEG). Tamanho recomendado &lt; 4MB.</small>
+            <div id="geminiPreview" class="gemini-preview" aria-live="polite" hidden>
+              <em class="gemini-preview-placeholder">Nenhuma imagem selecionada.</em>
+            </div>
+          </div>
+
+          <div class="gemini-actions">
+            <button type="button" id="btnInterpretarImagem" class="btn gemini-run">Interpretar Imagem</button>
+            <button type="button" id="btnLimparGemini" class="btn gemini-clear">Limpar Resultado</button>
+          </div>
+        </form>
+        <div id="geminiResultado" class="gemini-result" role="status" aria-live="polite">
+          <em class="gemini-placeholder">Resultado da descrição aparecerá aqui...</em>
+        </div>
+      </div>
+    </section>
+
     <section id="contact" class="contact">
       <div class="container">
         <h2 class="section-title">Entre em Contato</h2>
@@ -1321,11 +1366,12 @@
       </div>
     </section>
 
+
     <footer class="footer">
       <div class="container">
         <div class="footer-content">
           <div class="footer-section">
-            <h3>AGUIA Plugin</h3>
+            <h3>AGUIA</h3>
             <p>Tornando a educação digital acessível para todos.</p>
           </div>
           <div class="footer-section">

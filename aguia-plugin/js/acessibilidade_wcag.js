@@ -15,8 +15,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Tentativa antecipada: registrar um atalho imediatamente quando o script for carregado.
-// Isso ajuda quando o código principal (dentro de DOMContentLoaded) não chega a ser executado
 (function registerAguiaShortcutEarly() {
     try {
         if (window.__aguia_shortcut_installed) return;
@@ -2262,9 +2260,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Função para definir o tamanho da fonte
+    // Ajusta tamanho da fonte e reescala elementos de texto
     function setFontSize(size, silent = false) {
-        // Remove todas as classes anteriores de tamanho de fonte
         AGUIA_SCOPE.classList.remove(
             'aguia-text-size-100',
             'aguia-text-size-110',
@@ -2273,12 +2270,31 @@ document.addEventListener('DOMContentLoaded', function() {
             'aguia-text-size-140',
             'aguia-text-size-150'
         );
-        
-        // Aplica a nova classe de tamanho
-    AGUIA_SCOPE.classList.add('aguia-text-size-' + size);
-        
-        // Atualiza a variável atual
+        AGUIA_SCOPE.classList.add('aguia-text-size-' + size);
         currentFontSize = size;
+        // Reescala direta de elementos cujo tamanho original está em px
+        try {
+            const scale = size / 100;
+            const selector = 'p, h1, h2, h3, h4, h5, h6, li, a, span, label, td, th, button, strong, em, small, code, pre, blockquote';
+            const isPluginElement = function(el) {
+                return el.closest && (el.closest('#aguiaMenu') || el.closest('#aguiaButton'));
+            };
+            const elements = (AGUIA_SCOPE || document).querySelectorAll(selector);
+            elements.forEach(el => {
+                if (isPluginElement(el)) return;
+                const computed = window.getComputedStyle(el);
+                const originalPx = el.dataset.aguiaOriginalFontSizePx;
+                if (!originalPx) { el.dataset.aguiaOriginalFontSizePx = computed.fontSize; }
+                const basePx = parseFloat(el.dataset.aguiaOriginalFontSizePx);
+                if (!isNaN(basePx)) {
+                    if (scale === 1) {
+                        el.style.fontSize = '';
+                    } else {
+                        el.style.fontSize = (basePx * scale) + 'px';
+                    }
+                }
+            });
+        } catch (e) {}
         
         // Atualiza o estado do botão
         const increaseFontBtn = document.getElementById('aguiaIncreaseFontBtn');
@@ -2320,6 +2336,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (increaseFontBtn) {
             increaseFontBtn.classList.remove('active');
         }
+
+        // Restaurar tamanhos originais explicitamente (caso algum elemento fique preso com style inline)
+        try {
+            const selector = 'p, h1, h2, h3, h4, h5, h6, li, a, span, label, td, th, button, strong, em, small, code, pre, blockquote';
+            const elements = (AGUIA_SCOPE || document).querySelectorAll(selector);
+            elements.forEach(el => {
+                if (el.dataset.aguiaOriginalFontSizePx) {
+                    el.style.fontSize = '';
+                }
+            });
+        } catch (e) {}
     }
     
     // Função para alternar alto contraste melhorado
@@ -2374,12 +2401,10 @@ document.addEventListener('DOMContentLoaded', function() {
         saveUserPreference('highContrast', highContrastEnabled);
     }
     
-    // Função para alternar entre os níveis de intensidade de cores
+    // Alterna intensidade de cores (normal/baixa/alta/cinza)
     function toggleColorIntensity() {
-        // Incrementa o modo (0: normal, 1: baixa, 2: alta, 3: escala de cinza, 0: normal...)
+        const COLOR_INTENSITY_CLASSES = ['aguia-color-intensity-low','aguia-color-intensity-high','aguia-color-intensity-gray'];
         colorIntensityMode = (colorIntensityMode + 1) % 4;
-        
-        // Desativa alto contraste se estiver ativando qualquer modo de intensidade de cor
         if (colorIntensityMode > 0 && highContrastEnabled) {
             highContrastEnabled = false;
             AGUIA_SCOPE.classList.remove('aguia-high-contrast');
@@ -2390,14 +2415,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Remove todas as classes de intensidade de cor
-        AGUIA_SCOPE.classList.remove(
-            'aguia-color-intensity-low',
-            'aguia-color-intensity-high',
-            'aguia-color-intensity-gray'
-        );
-
-        // Evita conflito com filtros de daltonismo: se for usar intensidade de cor, desativa daltonismo
+        COLOR_INTENSITY_CLASSES.forEach(cls => {
+            AGUIA_SCOPE.classList.remove(cls);
+            document.body.classList.remove(cls);
+        });
         if (colorIntensityMode > 0) {
             AGUIA_SCOPE.classList.remove(
                 'aguia-colorblind-protanopia',
@@ -2413,42 +2434,53 @@ document.addEventListener('DOMContentLoaded', function() {
             saveUserPreference('colorblind', 'none');
             localStorage.setItem('aguia_colorblind_modes', JSON.stringify([]));
         }
-        
-        // Atualiza o botão
-            const intensityBtn = document.getElementById('aguiaColorIntensityBtn');
+        const intensityBtn = document.getElementById('aguiaColorIntensityBtn');
         if (intensityBtn) {
-            // Remove todas as classes de nível
             intensityBtn.classList.remove('active', 'level-1', 'level-2', 'level-3');
-            
-            // Atualiza o texto e o ícone de acordo com o modo
             const textSpan = intensityBtn.querySelector('.text');
             const iconSpan = intensityBtn.querySelector('.icon');
             
             switch (colorIntensityMode) {
-                case 0: // Normal
+                case 0:
                     if (textSpan) textSpan.textContent = 'Intensidade de Cores';
                     if (iconSpan) iconSpan.innerHTML = AguiaIcons.colorIntensity;
                     showStatusMessage('Intensidade de cores normal');
+                    COLOR_INTENSITY_CLASSES.forEach(cls => {
+                        AGUIA_SCOPE.classList.remove(cls);
+                        document.body.classList.remove(cls);
+                    });
                     break;
-                
-                case 1: // Baixa intensidade
-                    AGUIA_SCOPE.classList.add('aguia-color-intensity-low');
+                case 1:
+                    const scope1 = window.AGUIA_SCOPE || document.body;
+                    if (scope1 === document.body) {
+                        document.body.classList.add('aguia-color-intensity-low');
+                    } else {
+                        scope1.classList.add('aguia-color-intensity-low');
+                    }
                     intensityBtn.classList.add('active', 'level-1');
                     if (textSpan) textSpan.textContent = 'Baixa Intensidade';
                     if (iconSpan) iconSpan.innerHTML = AguiaIcons.colorIntensity;
                     showStatusMessage('Modo de baixa intensidade de cores ativado', 'success');
                     break;
-                
-                case 2: // Alta intensidade
-                    AGUIA_SCOPE.classList.add('aguia-color-intensity-high');
+                case 2:
+                    const scope2 = window.AGUIA_SCOPE || document.body;
+                    if (scope2 === document.body) {
+                        document.body.classList.add('aguia-color-intensity-high');
+                    } else {
+                        scope2.classList.add('aguia-color-intensity-high');
+                    }
                     intensityBtn.classList.add('active', 'level-2');
                     if (textSpan) textSpan.textContent = 'Alta Intensidade';
                     if (iconSpan) iconSpan.innerHTML = AguiaIcons.colorIntensity;
                     showStatusMessage('Modo de alta intensidade de cores ativado', 'success');
                     break;
-                
-                case 3: // Escala de cinza
-                    AGUIA_SCOPE.classList.add('aguia-color-intensity-gray');
+                case 3:
+                    const scope3 = window.AGUIA_SCOPE || document.body;
+                    if (scope3 === document.body) {
+                        document.body.classList.add('aguia-color-intensity-gray');
+                    } else {
+                        scope3.classList.add('aguia-color-intensity-gray');
+                    }
                     intensityBtn.classList.add('active', 'level-3');
                     if (textSpan) textSpan.textContent = 'Escala de Cinza';
                     if (iconSpan) iconSpan.innerHTML = AguiaIcons.colorIntensity;
@@ -2456,14 +2488,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
             }
         }
-        
-        // Salva preferência
         saveUserPreference('colorIntensityMode', colorIntensityMode);
     }
     
-    // Função para resetar configurações de contraste
+    // Reset geral de contraste/intensidade/daltonismo
     function resetContrast(silent = false) {
-        // Reset de alto contraste
+        const COLOR_INTENSITY_CLASSES = ['aguia-color-intensity-low','aguia-color-intensity-high','aguia-color-intensity-gray'];
+        const COLORBLIND_CLASSES = ['aguia-colorblind-protanopia','aguia-colorblind-deuteranopia','aguia-colorblind-tritanopia','aguia-colorblind-achromatopsia'];
         if (highContrastEnabled) {
             highContrastEnabled = false;
             AGUIA_SCOPE.classList.remove('aguia-high-contrast');
@@ -2473,22 +2504,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 contrastBtn.classList.remove('active');
             }
             
-            // Salva preferência
             saveUserPreference('highContrast', false);
         }
-        
-        // Reset de intensidade de cores
         if (colorIntensityMode > 0) {
             colorIntensityMode = 0;
-            
-            // Remove todas as classes de intensidade de cor
-            AGUIA_SCOPE.classList.remove(
-                'aguia-color-intensity-low',
-                'aguia-color-intensity-high',
-                'aguia-color-intensity-gray'
-            );
-            
-            // Atualiza o botão de intensidade
+            COLOR_INTENSITY_CLASSES.forEach(cls => { AGUIA_SCOPE.classList.remove(cls); document.body.classList.remove(cls); });
             const intensityBtn = document.getElementById('aguiaColorIntensityBtn');
             if (intensityBtn) {
                 intensityBtn.classList.remove('active', 'level-1', 'level-2', 'level-3');
@@ -2497,20 +2517,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (textSpan) textSpan.textContent = 'Intensidade de Cores';
                 if (iconSpan) iconSpan.innerHTML = AguiaIcons.colorIntensity;
             }
-            
-            // Salva preferência
             saveUserPreference('colorIntensityMode', 0);
         }
-        
-        // Reset de modo daltonismo
         if (colorBlindMode !== 'none') {
-            // Atualiza o botão de daltonismo
             const colorblindBtn = document.getElementById('aguiaColorblindButton');
             if (colorblindBtn) {
                 colorblindBtn.classList.remove('active');
             }
-            
-            // Reseta os botões de opção no painel de daltonismo
             document.querySelectorAll('#aguiaColorblindPanel .aguia-submenu-option').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -2518,40 +2531,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (noneButton) {
                 noneButton.classList.add('active');
             }
-            
-            // Remove classes de daltonismo do body, html e AGUIA_SCOPE
-            document.body.classList.remove(
-                'aguia-colorblind-protanopia',
-                'aguia-colorblind-deuteranopia',
-                'aguia-colorblind-tritanopia',
-                'aguia-colorblind-achromatopsia'
-            );
-            document.documentElement.classList.remove(
-                'aguia-colorblind-protanopia',
-                'aguia-colorblind-deuteranopia',
-                'aguia-colorblind-tritanopia',
-                'aguia-colorblind-achromatopsia'
-            );
-            AGUIA_SCOPE.classList.remove(
-                'aguia-colorblind-protanopia',
-                'aguia-colorblind-deuteranopia',
-                'aguia-colorblind-tritanopia',
-                'aguia-colorblind-achromatopsia'
-            );
+            COLORBLIND_CLASSES.forEach(cls => {
+                document.body.classList.remove(cls);
+                document.documentElement.classList.remove(cls);
+                AGUIA_SCOPE.classList.remove(cls);
+            });
             
             colorBlindMode = 'none';
             saveUserPreference('colorblind', 'none');
         }
-        
-        // Salva preferências
         saveUserPreference('highContrast', false);
         saveUserPreference('invertedColors', false);
     }
     
-    // Função para configurar modo de daltonismo (WCAG 1.4.8)
-    // Função para lidar com múltiplos modos de daltonismo
+    // Configura modos de daltonismo (suporta múltiplos)
     function setColorBlindModes(modes) {
-        // Remove classes anteriores do body e html para garantir que funcionem
         document.body.classList.remove(
             'aguia-colorblind-protanopia',
             'aguia-colorblind-deuteranopia',
@@ -2562,15 +2556,11 @@ document.addEventListener('DOMContentLoaded', function() {
             'aguia-colorblind-deuteranopia',
             'aguia-colorblind-tritanopia'
         );
-        // Também remove do AGUIA_SCOPE por compatibilidade
         AGUIA_SCOPE.classList.remove(
             'aguia-colorblind-protanopia',
             'aguia-colorblind-deuteranopia',
             'aguia-colorblind-tritanopia'
         );
-
-        // Evita conflito com os filtros de intensidade de cor (ambos usam 'filter')
-        // Remover quaisquer classes de intensidade de cor ativas
         AGUIA_SCOPE.classList.remove(
             'aguia-color-intensity-low',
             'aguia-color-intensity-high',
@@ -2581,11 +2571,9 @@ document.addEventListener('DOMContentLoaded', function() {
             'aguia-color-intensity-high',
             'aguia-color-intensity-gray'
         );
-        // Zera estado interno e UI do botão de intensidade de cores, se presente
         colorIntensityMode = 0;
         const intensityBtn = document.getElementById('aguiaColorIntensityBtn');
         if (intensityBtn) {
-            // Harmoniza com toggleColorIntensity, que usa classes level-1/2/3
             intensityBtn.classList.remove('active', 'level-1', 'level-2', 'level-3');
             const textSpan = intensityBtn.querySelector('.text');
             if (textSpan) {
@@ -2596,35 +2584,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 iconSpan.innerHTML = AguiaIcons.colorIntensity;
             }
         }
-        
-        // Atualiza a variável - mantemos compatibilidade com código legado usando o primeiro modo
         colorBlindMode = modes.length > 0 ? modes[0] : 'none';
-        
-        // Atualiza a UI para mostrar qual opção está ativa
         const colorblindButton = document.getElementById('aguiaColorblindButton');
-        
         if (modes.length > 0) {
-            // Aplica filtros no body e html para garantir que toda a página seja afetada
             modes.forEach(mode => {
                 document.body.classList.add('aguia-colorblind-' + mode);
-                document.documentElement.classList.add('aguia-colorblind-' + mode);
-                AGUIA_SCOPE.classList.add('aguia-colorblind-' + mode);
             });
-            
-            // Mantém o botão fora do efeito
-            const aguiaButton = document.getElementById('aguiaButton');
-            if (aguiaButton) {
-                aguiaButton.style.filter = 'none';
-            }
-            const aguiaMenu = document.getElementById('aguiaMenu');
-            if (aguiaMenu) {
-                aguiaMenu.style.filter = 'none';
-            }
-            
             colorblindButton.classList.add('active');
-            
-            // Mensagem de status para leitores de tela
-            let modeNames = modes.map(mode => {
+            const modeNames = modes.map(mode => {
                 switch (mode) {
                     case 'protanopia': return 'Protanopia (sem vermelho)';
                     case 'deuteranopia': return 'Deuteranopia (sem verde)';
@@ -2632,11 +2599,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     default: return mode;
                 }
             });
-            
-            const statusText = 'Modos de daltonismo ativados: ' + modeNames.join(', ');
-            showStatusMessage(statusText, 'success');
+            showStatusMessage('Modos de daltonismo ativados: ' + modeNames.join(', '), 'success');
         } else {
-            // Reseta a interface quando não há modos selecionados
             colorblindButton.classList.remove('active');
             showStatusMessage('Modos de daltonismo desativados');
         }
@@ -3837,46 +3801,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Aplicar modo de intensidade de cor
+        // Aplicar modo de intensidade de cor (corpo apenas)
         colorIntensityMode = parseInt(preferences.colorIntensityMode) || 0;
         if (colorIntensityMode > 0) {
-            // Atualiza botão se existir
             const intensityBtn = document.getElementById('aguiaColorIntensityBtn');
-            
-            // Aplica a classe adequada ao body
-            switch (colorIntensityMode) {
-                case 1: // Baixa intensidade
-                    AGUIA_SCOPE.classList.add('aguia-color-intensity-low');
-                    if (intensityBtn) {
-                        intensityBtn.classList.add('active', 'level-1');
-                        const textSpan = intensityBtn.querySelector('.text');
-                        const iconSpan = intensityBtn.querySelector('.icon');
-                        if (textSpan) textSpan.textContent = 'Baixa Intensidade';
-                        if (iconSpan) iconSpan.innerHTML = AguiaIcons.colorIntensity;
-                    }
-                    break;
-                
-                case 2: // Alta intensidade
-                    AGUIA_SCOPE.classList.add('aguia-color-intensity-high');
-                    if (intensityBtn) {
-                        intensityBtn.classList.add('active', 'level-2');
-                        const textSpan = intensityBtn.querySelector('.text');
-                        const iconSpan = intensityBtn.querySelector('.icon');
-                        if (textSpan) textSpan.textContent = 'Alta Intensidade';
-                        if (iconSpan) iconSpan.innerHTML = AguiaIcons.colorIntensity;
-                    }
-                    break;
-                
-                case 3: // Escala de cinza
-                    AGUIA_SCOPE.classList.add('aguia-color-intensity-gray');
-                    if (intensityBtn) {
-                        intensityBtn.classList.add('active', 'level-3');
-                        const textSpan = intensityBtn.querySelector('.text');
-                        const iconSpan = intensityBtn.querySelector('.icon');
-                        if (textSpan) textSpan.textContent = 'Escala de Cinza';
-                        if (iconSpan) iconSpan.innerHTML = AguiaIcons.colorIntensity;
-                    }
-                    break;
+            const intensityMap = {1:'aguia-color-intensity-low',2:'aguia-color-intensity-high',3:'aguia-color-intensity-gray'};
+            const cls = intensityMap[colorIntensityMode];
+            if (cls) document.body.classList.add(cls);
+            if (intensityBtn) {
+                intensityBtn.classList.add('active','level-'+colorIntensityMode);
+                const textSpan = intensityBtn.querySelector('.text');
+                if (textSpan) {
+                    const labels = {1:'Baixa Intensidade',2:'Alta Intensidade',3:'Escala de Cinza'};
+                    textSpan.textContent = labels[colorIntensityMode];
+                }
+                const iconSpan = intensityBtn.querySelector('.icon');
+                if (iconSpan) iconSpan.innerHTML = AguiaIcons.colorIntensity;
             }
         }
         

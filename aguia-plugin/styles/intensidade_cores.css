@@ -13,7 +13,12 @@
  */
 
 /* Modo de baixa intensidade - cores mais suaves e reduzidas */
-.aguia-color-intensity-low {
+.aguia-color-intensity-low:not(body) {
+    filter: saturate(60%) brightness(105%) !important;
+}
+/* Quando a classe é aplicada ao body, não aplicar filtro nele diretamente para não quebrar position:fixed */
+body.aguia-color-intensity-low { filter: none !important; }
+body.aguia-color-intensity-low > *:not(#aguiaMenu):not(#aguiaButton) {
     filter: saturate(60%) brightness(105%) !important;
 }
 
@@ -22,7 +27,11 @@
 }
 
 /* Modo de alta intensidade - cores mais fortes e marcantes */
-.aguia-color-intensity-high {
+.aguia-color-intensity-high:not(body) {
+    filter: saturate(150%) contrast(110%) !important;
+}
+body.aguia-color-intensity-high { filter: none !important; }
+body.aguia-color-intensity-high > *:not(#aguiaMenu):not(#aguiaButton) {
     filter: saturate(150%) contrast(110%) !important;
 }
 
@@ -31,8 +40,33 @@
 }
 
 /* Modo sem cor - escala de cinza */
-.aguia-color-intensity-gray {
+.aguia-color-intensity-gray:not(body) {
     filter: grayscale(100%) !important;
+}
+body.aguia-color-intensity-gray { filter: none !important; }
+body.aguia-color-intensity-gray > *:not(#aguiaMenu):not(#aguiaButton) {
+    filter: grayscale(100%) !important;
+}
+
+/* Garantir que o menu e o botão do plugin não sofram deslocamento ou herança de filtros.
+   Usamos :not() para excluir explicitamente esses elementos quando a classe de intensidade
+   é aplicada a um ancestral amplo. Caso a classe esteja no body ou #aguia-scope-element,
+   esta regra neutraliza os filtros apenas nesses componentes fixos. */
+.aguia-color-intensity-low #aguiaMenu,
+.aguia-color-intensity-low #aguiaButton,
+.aguia-color-intensity-high #aguiaMenu,
+.aguia-color-intensity-high #aguiaButton,
+.aguia-color-intensity-gray #aguiaMenu,
+.aguia-color-intensity-gray #aguiaButton {
+    filter: none !important;
+    position: fixed !important; /* reforça fixação em casos de interferência */
+    bottom: auto;
+}
+
+/* Reafirma posicionamento original do menu (substituir bottom:auto se for removido) */
+#aguiaMenu.aguia-menu {
+    bottom: 100px;
+    right: 30px;
 }
 
 .aguia-color-intensity-gray img:not(.aguia-logo) {

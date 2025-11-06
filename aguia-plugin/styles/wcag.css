@@ -145,6 +145,8 @@ button#aguiaButton.aguia-button:hover::before {
     z-index: 9999;
     overflow: hidden;
     animation: aguiaMenuFadeIn 0.3s ease-out; /* Animação ao abrir */
+    transform: translateZ(0); /* cria contexto próprio e evita influência de filtros dos ancestrais */
+    will-change: transform;
 }
 
 @keyframes aguiaMenuFadeIn {
