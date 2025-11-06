@@ -1,0 +1,49 @@
+/*
+ * AguiaPlugin — Fonte OpenDyslexic
+ *
+ * Descrição:
+ *   Define o uso da fonte OpenDyslexic para melhorar a leitura para
+ *   usuários com dificuldade de leitura. Inclui declarações @font-face
+ *   e uma classe utilitária para aplicar a fonte em áreas específicas.
+ *
+ * @module styles/fonte_opendyslexic.css
+ * @license GNU GPL v3 or later
+ */
+
+/* Import the OpenDyslexic font */
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* Aplica a fonte OpenDyslexic a todos os elementos de texto */
+.aguia-opendyslexic-fonts {
+    font-family: 'OpenDyslexic', sans-serif !important;
+}
+
+.aguia-opendyslexic-fonts *:not(i):not(.fa):not(.fas):not(.far):not(.fal):not(.fab):not(.material-icons):not([class*="icon-"]):not(.glyphicon) {
+    font-family: 'OpenDyslexic', sans-serif !important;
+}

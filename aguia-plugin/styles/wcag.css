@@ -1,0 +1,1244 @@
+/**
+ * AguiaPlugin — Estilos WCAG
+ *
+ * Descrição:
+ *   Conjunto de estilos de acessibilidade alinhados às diretrizes WCAG 2.1
+ *   nível AA (focos visíveis, contraste, tamanhos e variáveis de tema).
+ *
+ * @module styles/wcag.css
+ * @package    local_aguiaplugin
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* Variáveis CSS com cores com contraste suficiente para WCAG 2.1 AA */
+:root {
+    --aguia-primary-color: #0056b3;        /* Azul principal - identidade do plugin */
+    --aguia-secondary-color: #1a73e8;      /* Azul médio - ajustado para contraste melhor */
+    --aguia-accent-color: #1976d2;         /* Azul claro (ajustado) - para elementos decorativos com melhor contraste */
+    --aguia-background-light: #ffffff;     /* Fundo branco */
+    --aguia-background-dark: #1a1a1a;      /* Fundo escuro */
+    --aguia-text-light: #ffffff;           /* Texto claro para fundos escuros */
+    --aguia-text-dark: #333333;            /* Texto escuro para fundos claros */
+    --aguia-focus-color: #ffbf47;          /* Amarelo destaque para foco - alto contraste */
+    --aguia-error-color: #d32f2f;          /* Vermelho para erros - com bom contraste */
+    --aguia-success-color: #2e7d32;        /* Verde para sucesso - ajustado para melhor contraste */
+    --aguia-hover-bg: #f5f9ff;             /* Fundo hover para itens do menu */
+    --aguia-disabled-color: #757575;       /* Cor para elementos desabilitados */
+    --aguia-border-radius: 8px;            /* Arredondamento de bordas */
+    --aguia-box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16); /* Sombra padrão */
+}
+
+/* Cursor de lupa quando a lupa de conteúdo está ativa. */
+.aguia-magnifier-active, .aguia-magnifier-active * {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" stroke="black" stroke-width="2" fill="white"/><line x1="15" y1="15" x2="22" y2="22" stroke="black" stroke-width="2" stroke-linecap="round"/></svg>') 12 12, zoom-in !important;
+}
+
+/* Estilos para garantir foco visível - WCAG 2.4.7 */
+*:focus {
+    outline: 3px solid var(--aguia-focus-color) !important;
+    outline-offset: 2px !important;
+}
+
+/* Estilos para contraste suficiente - WCAG 1.4.3 */
+.aguia-button {
+    background-color: #2271ff !important;
+    color: white !important;
+    border-radius: 8px !important;
+    position: fixed !important; /* Garantindo que o botão fique fixo mesmo com estilos conflitantes */
+    top: 43% !important; /* Posicionado um pouco acima do meio vertical da tela */
+    transform: translateY(-50%) !important; /* Ajuste para centralização perfeita */
+    right: 10px !important; /* Reduzida distância da borda direita */
+    width: 40px !important; /* Tamanho reduzido para 40px conforme solicitado */
+    height: 40px !important; /* Tamanho reduzido para 40px conforme solicitado */
+    border: 1px solid #2271ff !important; /* Borda reduzida de 2px para 1px */
+    box-sizing: content-box !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transition: all 0.3s ease !important;
+    overflow: visible !important;
+}
+
+.aguia-button:hover {
+    box-shadow: 0 5px 15px rgba(0, 86, 179, 0.5);
+    border-radius: 16px !important;
+}
+
+/* Estilo para a faixa lateral com o nome AGUIA no hover */
+button#aguiaButton.aguia-button::before {
+    content: "AGUIA";
+    position: absolute;
+    left: auto !important;
+    right: calc(100% + 10px) !important; /* Posiciona completamente à esquerda do botão */
+    top: 50% !important;
+    transform: translateY(-50%) translateX(-20px) !important;
+    height: auto !important;
+    background-color: #2271ff;
+    color: white;
+    padding: 12px 24px !important; /* Aumentado padding para ficar mais largo e alto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 16px; /* Fonte maior */
+    line-height: normal;
+    min-width: auto;
+    text-indent: 0;
+    font-family: inherit;
+    box-shadow: 0 5px 15px rgba(0, 86, 179, 0.5);
+    border: 1px solid #2271ff;
+    white-space: nowrap;
+    z-index: 9998 !important; /* ABAIXO do botão para nunca sobrepor */
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+button#aguiaButton.aguia-button:hover::before {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0) !important;
+}
+
+.aguia-button:focus {
+    box-shadow: 0 5px 15px rgba(0, 86, 179, 0.5);
+    border-radius: 8px !important;
+}
+
+.aguia-button img {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+}
+
+/* Animação de pulsar para chamar atenção ao carregar a página */
+@keyframes pulseAnimation {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 86, 179, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 86, 179, 0); }
+}
+
+.aguia-button.pulse {
+    animation: pulseAnimation 2s infinite;
+    border-radius: 8px !important;
+}
+
+/* Menu de acessibilidade */
+.aguia-menu {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    background-color: var(--aguia-background-light);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 14px; /* Bordas mais arredondadas como UserWay */
+    padding: 0;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15); /* Sombra mais evidente como UserWay */
+    display: none;
+    width: 350px; /* Um pouco mais largo */
+    z-index: 9999;
+    overflow: hidden;
+    animation: aguiaMenuFadeIn 0.3s ease-out; /* Animação ao abrir */
+}
+
+@keyframes aguiaMenuFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.aguia-menu-header {
+    background-color: #1a73e8; /* Cor mais vibrante como no UserWay */
+    background: linear-gradient(135deg, #1a73e8, #0d47a1); /* Gradiente para aparência moderna */
+    color: var(--aguia-text-light);
+    padding: 18px 22px; /* Padding maior */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.aguia-menu-header h2 {
+    color: var(--aguia-text-light);
+    margin: 0;
+    font-size: 20px; /* Texto ligeiramente maior */
+    line-height: 1.4;
+    font-weight: 600; /* Texto mais forte */
+    letter-spacing: 0.3px; /* Espaçamento de letras para legibilidade */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Sombra sutil no texto */
+}
+
+.aguia-menu-close {
+    background: rgba(255,255,255,0.15); /* Fundo semi-transparente */
+    color: var(--aguia-text-light);
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.aguia-menu-close:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    /* Removida rotação/transform para evitar animação no botão de fechar */
+}
+
+.aguia-menu-content {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+/* Modal simples para exibir a descrição gerada para imagens */
+.aguia-image-modal {
+    position: fixed;
+    right: 30px;
+    bottom: 160px;
+    width: 340px;
+    max-width: calc(100% - 40px);
+    background: var(--aguia-background-light);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    z-index: 10001;
+    display: none;
+}
+.aguia-image-modal-content {
+    padding: 12px 14px;
+}
+.aguia-image-modal-body {
+    color: #222;
+    font-size: 14px;
+    line-height: 1.4;
+    max-height: 40vh;
+    overflow: auto;
+}
+.aguia-image-modal-close {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+/* Barra de rolagem personalizada */
+.aguia-menu-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.aguia-menu-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.aguia-menu-content::-webkit-scrollbar-thumb {
+    background: var(--aguia-secondary-color);
+    border-radius: 4px;
+}
+
+.aguia-menu-content::-webkit-scrollbar-thumb:hover {
+    background: var(--aguia-primary-color);
+}
+
+/* Organização de opções em grid */
+.aguia-options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+/* Categorias de opções */
+.aguia-category {
+    margin-bottom: 24px;
+}
+
+.aguia-category-title {
+    font-size: 16px;
+    color: #2271ff;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-weight: 500;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Botões do menu com contraste adequado - WCAG 1.4.3 */
+.aguia-option {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 12px 8px;
+    background-color: #FFFFFF;
+    color: #333333;
+    border: 1px solid #E6E6E6;
+    border-radius: 10px; /* Bordas mais arredondadas para um look moderno */
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease; /* Animação mais suave e simples */
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    height: 120px; /* Altura um pouco maior para melhor espaçamento */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Sombra muito sutil */
+}
+
+.aguia-option:hover,
+.aguia-option:focus {
+    background-color: #F9FBFF;
+    border-color: #D0D0D0;
+    box-shadow: 0 2px 6px rgba(34, 113, 255, 0.1); /* Sombra leve com tom azulado */
+}
+
+.aguia-option-button.active {
+    background-color: #2271ff;
+    color: #FFFFFF;
+    border-color: #2271ff;
+}
+
+.aguia-option span.icon {
+    margin-bottom: 12px;
+    font-size: 24px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.aguia-option span.icon svg {
+    width: 36px !important;
+    height: 36px !important;
+    fill: #000000 !important;
+    color: #000000 !important;
+    stroke: #000000 !important;
+    transition: transform 0.2s ease;
+}
+
+.aguia-option span.text {
+    font-weight: 500;
+    line-height: 1.2;
+    font-size: 15px;
+    text-align: center;
+    color: #333;
+    max-width: 95%;
+    margin: 0 auto;
+}
+
+.aguia-option.active {
+    background-color: rgba(34, 113, 255, 0.05);
+    border-color: #2271ff;
+    box-shadow: 0 1px 4px rgba(34, 113, 255, 0.15);
+}
+
+.aguia-option.active span.icon svg {
+    /* Mantém ícones pretos mesmo quando ativos */
+    fill: #000000 !important;
+    color: #000000 !important;
+    stroke: #000000 !important;
+}
+
+.aguia-option.active span.text {
+    color: #2271ff;
+    font-weight: 600;
+}
+
+/* Estilo para opções em linha (para o reset por exemplo) */
+.aguia-inline-options {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.aguia-option-inline {
+    padding: 8px 16px;
+    background-color: #f5f5f5;
+    color: var(--aguia-text-dark);
+    border: none;
+    border-radius: var(--aguia-border-radius);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.aguia-option-inline:hover {
+    background-color: #e0e0e0;
+}
+
+/* Estilos para alto contraste melhorado - WCAG 1.4.6 */
+.aguia-high-contrast {
+    background-color: #121212 !important; /* Preto suavizado para menos agressividade visual */
+    color: #f7f7f7 !important;
+    transition: all 0.3s ease !important;
+}
+
+.aguia-high-contrast * {
+    background-color: #121212 !important;
+    color: #f7f7f7 !important;
+    border-color: #ddd !important;
+    transition: all 0.3s ease !important;
+}
+
+.aguia-high-contrast a {
+    color: #4da3ff !important; /* Azul mais harmonioso e ainda com contraste suficiente */
+    text-decoration: underline !important;
+    text-underline-offset: 2px !important;
+    transition: all 0.2s ease !important;
+    border-bottom: 1px solid #4da3ff !important;
+}
+
+.aguia-high-contrast a:hover,
+.aguia-high-contrast a:focus {
+    color: #80bdff !important;
+    text-decoration: underline !important;
+    text-decoration-thickness: 2px !important;
+    background-color: #1a1a1a !important; /* Destaque no hover */
+}
+
+.aguia-high-contrast button,
+.aguia-high-contrast [role="button"],
+.aguia-high-contrast input[type="button"],
+.aguia-high-contrast input[type="submit"] {
+    color: #f7f7f7 !important;
+    background-color: #0057b8 !important;
+    border: 1px solid #f7f7f7 !important; /* Borda mais fina para melhor estética */
+    border-radius: 6px !important; /* Mais arredondado para um visual moderno */
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important; /* Sombra para sensação de profundidade */
+}
+
+.aguia-high-contrast button:hover,
+.aguia-high-contrast [role="button"]:hover,
+.aguia-high-contrast input[type="button"]:hover,
+.aguia-high-contrast input[type="submit"]:hover {
+    background-color: #1e68c5 !important; /* Azul um pouco mais claro no hover */
+    transform: translateY(-1px) !important; /* Efeito de elevação */
+}
+
+.aguia-high-contrast img:not(.aguia-logo) {
+    filter: grayscale(80%) contrast(120%) !important; /* Menos agressivo na imagem */
+    border: 1px solid #aaa !important;
+    border-radius: 4px !important; /* Bordas arredondadas nas imagens */
+}
+
+.aguia-high-contrast input[type="text"],
+.aguia-high-contrast textarea,
+.aguia-high-contrast select {
+    background-color: #1a1a1a !important; /* Fundo ligeiramente mais claro para elementos de formulário */
+    color: #f7f7f7 !important;
+    border: 1px solid #aaa !important;
+    border-radius: 6px !important;
+    padding: 6px 10px !important;
+}
+
+.aguia-high-contrast :focus {
+    outline: 3px solid #4da3ff !important;
+    outline-offset: 2px !important;
+}
+
+/* Fontes legíveis - WCAG 1.4.8 */
+.aguia-readable-fonts,
+.aguia-readable-fonts * {
+    font-family: "Arial", "Helvetica", sans-serif !important;
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.16em !important;
+    line-height: 1.5 !important;
+}
+
+/* Espaçamento adequado - WCAG 1.4.8 */
+/* Nível 1 - Espaçamento pequeno */
+.aguia-spacing-level-1 {
+    line-height: 1.4 !important;
+    word-spacing: 0.02em !important;
+}
+
+.aguia-spacing-level-1 p, 
+.aguia-spacing-level-1 li, 
+.aguia-spacing-level-1 h1, 
+.aguia-spacing-level-1 h2, 
+.aguia-spacing-level-1 h3, 
+.aguia-spacing-level-1 h4, 
+.aguia-spacing-level-1 h5, 
+.aguia-spacing-level-1 h6 {
+    margin-bottom: 0.8em !important;
+    letter-spacing: 0.01em !important;
+}
+
+.aguia-spacing-level-1 * {
+    padding: 0.1em 0 !important;
+}
+
+/* Nível 2 - Espaçamento médio */
+.aguia-spacing-level-2 {
+    line-height: 1.6 !important;
+    word-spacing: 0.05em !important;
+}
+
+.aguia-spacing-level-2 p, 
+.aguia-spacing-level-2 li, 
+.aguia-spacing-level-2 h1, 
+.aguia-spacing-level-2 h2, 
+.aguia-spacing-level-2 h3, 
+.aguia-spacing-level-2 h4, 
+.aguia-spacing-level-2 h5, 
+.aguia-spacing-level-2 h6 {
+    margin-bottom: 1.2em !important;
+    letter-spacing: 0.02em !important;
+}
+
+.aguia-spacing-level-2 * {
+    padding: 0.18em 0 !important;
+}
+
+/* Nível 3 - Espaçamento grande */
+.aguia-spacing-level-3 {
+    line-height: 1.8 !important;
+    word-spacing: 0.08em !important;
+}
+
+.aguia-spacing-level-3 p, 
+.aguia-spacing-level-3 li, 
+.aguia-spacing-level-3 h1, 
+.aguia-spacing-level-3 h2, 
+.aguia-spacing-level-3 h3, 
+.aguia-spacing-level-3 h4, 
+.aguia-spacing-level-3 h5, 
+.aguia-spacing-level-3 h6 {
+    margin-bottom: 1.6em !important;
+    letter-spacing: 0.04em !important;
+}
+
+.aguia-spacing-level-3 * {
+    padding: 0.22em 0 !important;
+}
+
+.aguia-increased-spacing {
+    line-height: 1.8 !important;
+}
+
+.aguia-increased-spacing p, 
+.aguia-increased-spacing li, 
+.aguia-increased-spacing h1, 
+.aguia-increased-spacing h2, 
+.aguia-increased-spacing h3, 
+.aguia-increased-spacing h4, 
+.aguia-increased-spacing h5, 
+.aguia-increased-spacing h6 {
+    margin-bottom: 1.5em !important;
+}
+
+/* Destaque para texto falado - WCAG 1.4.1 */
+.aguia-text-highlight {
+    background-color: var(--aguia-focus-color) !important;
+    color: var(--aguia-text-dark) !important;
+}
+
+/* Auxiliar de leitura - WCAG 2.4.8 */
+.aguia-reading-helper {
+    position: absolute;
+    background: linear-gradient(to bottom, rgba(47, 128, 237, 0.15) 0%, rgba(47, 128, 237, 0.25) 100%);
+    height: 1.5em; /* Altura adequada para destacar a linha específica */
+    min-height: 24px; /* Altura mínima para garantir visibilidade */
+    pointer-events: none; /* Impede que o guia interfira com cliques */
+    z-index: 9998;
+    border: 2px solid rgba(47, 128, 237, 0.7); /* Borda mais nítida e mais visível */
+    border-radius: 3px; /* Raio suavemente arredondado */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); /* Sombra mais visível */
+    transition: all 0.12s ease-out; /* Transição um pouco mais rápida */
+    /* Sem efeito de blur para manter o texto nítido */
+    /* Efeito de destaque nas bordas */
+    outline: 1px solid rgba(255, 255, 255, 0.4);
+    outline-offset: -1px;
+}
+
+/* Status message - WCAG 4.1.3 */
+
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(120px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    40% {
+        opacity: 1;
+        transform: translateX(-6px);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(120px);
+    }
+}
+
+.aguia-status-message.success {
+    border-left-color: var(--aguia-success-color);
+}
+
+
+.aguia-status-message {
+    position: fixed;
+    /* posicionamento será controlado via inline styles pela função showStatusMessage */
+    padding: 14px 20px;
+    background-color: var(--aguia-background-light);
+    color: var(--aguia-text-dark);
+    border-left: 4px solid var(--aguia-primary-color);
+    border-radius: var(--aguia-border-radius);
+    box-shadow: var(--aguia-box-shadow);
+    display: none;
+    z-index: 10001;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+    max-width: 360px;
+    word-wrap: break-word;
+}
+
+/* Entradas/saídas aplicadas via classes adicionadas por JS */
+.aguia-status-enter {
+    animation: slideInRight 0.36s cubic-bezier(.22,.9,.28,1) forwards;
+    will-change: transform, opacity;
+}
+
+.aguia-status-exit {
+    animation: slideOutRight 0.32s cubic-bezier(.3,0,.1,1) forwards;
+    will-change: transform, opacity;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-20px);
+    }
+}
+
+/* Classes de tamanho de texto - WCAG 1.4.4 */
+.aguia-text-size-100 {
+    font-size: 1rem !important;
+}
+
+.aguia-text-size-110 {
+    font-size: 1.1rem !important;
+}
+
+.aguia-text-size-120 {
+    font-size: 1.2rem !important;
+}
+
+.aguia-text-size-130 {
+    font-size: 1.3rem !important;
+}
+
+.aguia-text-size-140 {
+    font-size: 1.4rem !important;
+}
+
+/* Respeita preferência do usuário por reduzir movimento */
+@media (prefers-reduced-motion: reduce) {
+    .aguia-status-message,
+    .aguia-button,
+    .aguia-menu,
+    .aguia-option,
+    .aguia-save-button,
+    .aguia-reset-button {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* Classe para reduzir animações do plugin e do site quando usuário escolher */
+.aguia-reduce-animations,
+.aguia-reduce-animations * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+}
+
+/* Regras adicionais para suavizar mudanças de layout quando animações estiverem reduzidas */
+.aguia-reduce-animations img,
+.aguia-reduce-animations svg {
+    will-change: auto !important;
+}
+
+.aguia-text-size-150 {
+    font-size: 1.5rem !important;
+}
+
+/* Garante que links sejam identificáveis - WCAG 1.4.1 */
+.aguia-emphasize-links a {
+    text-decoration: underline !important;
+    color: var(--aguia-secondary-color) !important;
+}
+
+.aguia-emphasize-links a:hover,
+.aguia-emphasize-links a:focus {
+    text-decoration: underline double !important;
+    color: var(--aguia-primary-color) !important;
+}
+
+/* Controles deslizantes - para tamanho de fonte e outros ajustes */
+.aguia-slider-control {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: var(--aguia-border-radius);
+}
+
+.aguia-slider-label {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--aguia-text-dark);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.aguia-slider-label::after {
+    content: attr(data-value);
+    font-size: 12px;
+    font-weight: normal;
+    color: var(--aguia-secondary-color);
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.aguia-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #e6e6e6;
+    outline: none;
+    border-radius: 10px;
+    margin: 8px 0;
+}
+
+.aguia-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--aguia-primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.aguia-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.aguia-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--aguia-primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.aguia-slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.aguia-slider::-moz-range-progress {
+    background-color: var(--aguia-primary-color);
+    height: 6px;
+    border-radius: 10px;
+}
+
+/* Estilo para botões de ação principais */
+.aguia-action-button {
+    background-color: var(--aguia-primary-color);
+    color: var(--aguia-text-light);
+    border: none;
+    border-radius: var(--aguia-border-radius);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.aguia-action-button:hover,
+.aguia-action-button:focus {
+    background-color: #004494;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.aguia-action-button.secondary {
+    background-color: #f0f0f0;
+    color: var(--aguia-text-dark);
+}
+
+.aguia-action-button.secondary:hover,
+.aguia-action-button.secondary:focus {
+    background-color: #e0e0e0;
+}
+
+/* Estilo para interruptores (switches) */
+.aguia-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.aguia-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.aguia-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.aguia-switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .aguia-switch-slider {
+    background-color: var(--aguia-primary-color);
+}
+
+input:focus + .aguia-switch-slider {
+    box-shadow: 0 0 1px var(--aguia-primary-color);
+}
+
+input:checked + .aguia-switch-slider:before {
+    transform: translateX(24px);
+}
+
+/* Footer do menu com opção de reset */
+.aguia-menu-footer {
+    padding: 12px 16px;
+    border-top: 1px solid #eaeaea;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fafafa;
+}
+
+.aguia-menu-footer {
+    padding: 10px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-start; /* Alinha os botões à esquerda */
+    align-items: center;
+    background-color: #fafafa;
+    gap: 10px; /* Adiciona espaço entre os botões */
+}
+
+.aguia-reset-button {
+    color: #fff; /* Texto branco para contraste */
+    background-color: #c0392b; /* Tom de vermelho mais escuro e acessível */
+    border: none; /* Remove a borda para um visual mais limpo */
+    border-radius: var(--aguia-border-radius);
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3); /* Sombra na cor do botão */
+    width: 60%; /* Botão ocupa 60% da largura do plugin (um pouco mais da metade) */
+}
+
+.aguia-reset-button:hover {
+    background-color: #b71c1c; /* Vermelho ainda mais escuro no hover */
+    box-shadow: 0 4px 8px rgba(183, 28, 28, 0.4); /* Sombra mais pronunciada no hover */
+    transform: translateY(-1px); /* Leve elevação no hover */
+}
+
+/* Botão de salvar preferências */
+.aguia-save-button {
+    /* Usa a cor primária definida em :root para garantir bom contraste */
+    background-color: var(--aguia-primary-color);
+    color: #fff;
+    border: none;
+    border-radius: var(--aguia-border-radius);
+    padding: 8px 16px; /* Aumenta o padding */
+    font-size: 13px;
+    font-weight: 500; /* Fonte um pouco mais forte */
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.05s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra */
+}
+
+.aguia-save-button:hover {
+    background-color: #1a58cc; /* Tom mais escuro no hover */
+}
+
+.aguia-save-button:active {
+    transform: translateY(1px);
+    box-shadow: none; /* Remove a sombra ao clicar */
+}
+
+.aguia-save-button[disabled] {
+    background-color: #a0b4d1;
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.aguia-credits {
+    font-size: 11px;
+    color: #888;
+    position: absolute;
+    left: 20px;
+}
+
+/* Estilos para o painel de daltonismo */
+.aguia-submenu {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    background-color: var(--aguia-background-light);
+    border: 1px solid #ddd;
+    border-radius: var(--aguia-border-radius);
+    padding: 20px;
+    box-shadow: var(--aguia-box-shadow);
+    width: 350px;
+    z-index: 9999;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.aguia-submenu-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.aguia-back-button {
+    background: none;
+    border: none;
+    color: var(--aguia-primary-color);
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: var(--aguia-border-radius);
+    margin-right: 10px;
+}
+
+.aguia-back-button:hover {
+    background-color: var(--aguia-hover-bg);
+}
+
+.aguia-submenu h3 {
+    margin: 0;
+    flex-grow: 1;
+    font-size: 18px;
+    color: var(--aguia-text-dark);
+}
+
+.aguia-submenu-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.aguia-submenu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.aguia-submenu-option {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--aguia-border-radius);
+    background-color: var(--aguia-background-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--aguia-text-dark);
+    text-align: left;
+    font-size: 16px;
+    position: relative;
+}
+
+.aguia-submenu-option:hover {
+    background-color: var(--aguia-hover-bg);
+}
+
+.aguia-submenu-option.active {
+    background-color: var(--aguia-primary-color);
+    color: var(--aguia-text-light);
+    border-color: var(--aguia-primary-color);
+}
+
+/* Estilização específica para o painel de daltonismo
+   Garante que a opção selecionada fique azul como os demais botões, mesmo com CSSs concorrentes */
+#aguiaColorblindPanel {
+    /* Impede que os filtros de daltonismo afetem o próprio painel de seleção */
+    filter: none !important;
+    -webkit-filter: none !important;
+}
+
+#aguiaColorblindPanel .aguia-submenu-option.active {
+    background: linear-gradient(135deg, #2196f3 0%, #0d47a1 100%) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3) !important;
+}
+
+#aguiaColorblindPanel .aguia-submenu-option.active .aguia-text,
+#aguiaColorblindPanel .aguia-submenu-option.active .aguia-text-container {
+    color: #ffffff !important;
+}
+
+#aguiaColorblindPanel .aguia-submenu-option.active .aguia-icon svg circle,
+#aguiaColorblindPanel .aguia-submenu-option.active .aguia-icon-container svg circle {
+    stroke: #ffffff !important;
+    stroke-width: 2px !important;
+}
+
+#aguiaColorblindPanel .aguia-submenu-option.active .aguia-icon svg path,
+#aguiaColorblindPanel .aguia-submenu-option.active .aguia-icon-container svg path {
+    stroke: #ffffff !important;
+}
+
+.aguia-submenu-option .aguia-icon {
+    margin-right: 15px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+}
+
+.aguia-submenu-option .aguia-icon svg {
+    width: 36px;
+    height: 36px;
+    display: block;
+}
+
+.aguia-submenu-option .option-text {
+    font-size: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1.2;
+}
+
+/* Garantir que o botão de acessibilidade não seja afetado pelos filtros de daltonismo */
+#aguiaButton {
+    filter: none !important;
+    -webkit-filter: none !important;
+    z-index: 9999 !important;
+    border-radius: 8px !important;
+    background-color: #2271ff !important;
+}
+
+/* Estilo definitivo para o botão AGUIA com máxima prioridade */
+button#aguiaButton.aguia-button {
+    background-color: #2271ff !important;
+    color: white !important;
+    border-radius: 10px !important;
+    position: fixed !important;
+    top: 43% !important; /* Posicionado um pouco acima do meio vertical da tela */
+    transform: translateY(-50%) !important; /* Ajuste para centralização perfeita */
+    right: 10px !important; /* Reduzida distância da borda direita */
+    width: 40px !important; /* Tamanho reduzido para 40px conforme solicitado */
+    height: 40px !important; /* Tamanho reduzido para 40px conforme solicitado */
+    border: 1px solid #2271ff !important; /* Borda reduzida de 2px para 1px */
+    box-sizing: content-box !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: visible !important;
+}
+
+button#aguiaButton.aguia-button img.aguia-logo {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    object-fit: cover !important;
+    display: block !important;
+    margin: auto !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+/* Estilo definitivo para o hover do botão AGUIA com máxima prioridade */
+button#aguiaButton.aguia-button::before {
+    content: "AGUIA" !important;
+    position: absolute !important;
+    left: auto !important;
+    right: calc(100% + 10px) !important; /* FORÇA posicionamento à esquerda do botão sem sobrepor */
+    top: 50% !important;
+    transform: translateY(-50%) translateX(-20px) !important;
+    height: auto !important;
+    background-color: #2271ff !important;
+    color: white !important;
+    padding: 12px 24px !important; /* Aumentado padding para ficar mais largo e alto */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    font-size: 16px !important; /* Fonte maior */
+    line-height: normal !important;
+    min-width: auto !important;
+    text-indent: 0 !important;
+    font-family: inherit !important;
+    box-shadow: 0 3px 10px rgba(0, 86, 179, 0.5) !important;
+    border: 1px solid #2271ff !important;
+    white-space: nowrap !important;
+    z-index: 9998 !important; /* ABAIXO do botão (9999) para nunca sobrepor */
+    opacity: 0 !important;
+    transition: all 0.3s ease !important;
+    pointer-events: none !important;
+}
+
+button#aguiaButton.aguia-button:hover::before {
+    opacity: 1 !important;
+    transform: translateY(-50%) translateX(0) !important;
+}
+
+/* Estilo melhorado para o botão de daltonismo */
+#aguiaColorblindButton {
+    background: linear-gradient(145deg, #ffffff, #f0f7ff);
+    border: 1px solid rgba(33, 150, 243, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+#aguiaColorblindButton .icon {
+    font-size: 28px;
+    background: linear-gradient(45deg, #ff5252, #2196f3, #4caf50, #ffeb3b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: 10px;
+    display: block;
+}
+
+#aguiaColorblindButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(33, 150, 243, 0.2);
+}
+
+#aguiaColorblindButton.active {
+    background: linear-gradient(145deg, #2196f3, #0d47a1);
+}
+
+#aguiaColorblindButton.active .icon {
+    color: white;
+    background: none;
+}
+
+/* Estilos para ocultar imagens - WCAG 1.1.1 */
+.aguia-hide-images img:not(.aguia-logo):not(#aguiaButton img) {
+    filter: opacity(0);
+    border: 1px dashed #ccc !important;
+    background-color: #f5f5f5 !important;
+    position: relative !important;
+}
+
+.aguia-hide-images img:not(.aguia-logo):not(#aguiaButton img)::before {
+    content: "Imagem Oculta";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    font-size: 14px;
+    background-color: #f5f5f5;
+    z-index: 1;
+}
+
+/* Botão de ocultar imagens */
+#aguiaHideImagesBtn .icon {
+    font-size: 24px;
+}
+
+#aguiaHideImagesBtn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(33, 150, 243, 0.2);
+}
+
+#aguiaHideImagesBtn.active {
+    background: linear-gradient(145deg, #2196f3, #0d47a1);
+    color: white;
+}

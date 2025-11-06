@@ -1,0 +1,108 @@
+/**
+ * Estilos do botão AGUIA (botão flutuante principal)
+ *
+ * @module     local_aguiaplugin/aguia_button
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+.aguia-button {
+    position: fixed !important;
+    top: 43% !important;
+    transform: translateY(-50%) !important;
+    right: 10px !important;
+    z-index: 9999 !important;
+    background-color: #2271ff !important;
+    border-radius: 10px !important;
+    border: 1px solid #2271ff !important;
+    width: 40px !important;
+    height: 40px !important;
+}
+.aguia-logo {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    object-fit: cover !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+.aguia-button::before {
+    content: "AGUIA" !important;
+    position: absolute !important;
+    left: auto !important;
+    right: calc(100% + 10px) !important; /* Posiciona completamente à esquerda do botão com 10px de espaço */
+    top: 50% !important; /* Centraliza verticalmente */
+    transform: translateY(-50%) translateX(-20px) !important; /* Centraliza verticalmente e começa fora da tela */
+    height: auto !important;
+    background-color: #2271ff !important;
+    color: white !important;
+    padding: 12px 24px !important; /* Aumentado padding para ficar mais largo e alto */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    font-size: 16px !important; /* Fonte maior */
+    box-shadow: 0 3px 10px rgba(0, 86, 179, 0.5) !important;
+    border: 1px solid #2271ff !important;
+    white-space: nowrap !important;
+    z-index: 9998 !important;
+    opacity: 0 !important;
+    transition: all 0.3s ease !important;
+    pointer-events: none !important;
+}
+.aguia-button:hover::before {
+    opacity: 1 !important;
+    transform: translateY(-50%) translateX(0) !important; /* Mantém centralizado verticalmente e desliza para a posição final */
+}
+.aguia-submenu-option::before,
+.aguia-multi-select-option::before {
+    content: none !important;
+    display: none !important;
+}
+.aguia-submenu-option {
+    display: flex !important;
+    align-items: center !important;
+    padding: 10px 15px !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+    text-align: left !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    border: none !important;
+    background-color: white;
+}
+.aguia-submenu-option[data-value="none"]::before {
+    content: "\2713" !important;
+    display: inline-flex !important;
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    background-color: transparent !important;
+    border-radius: 50% !important;
+    margin-right: 10px !important;
+    border: 1px solid #444 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: bold !important;
+    vertical-align: middle !important;
+    flex-shrink: 0 !important;
+}
+.aguia-submenu-option.active[data-value="protanopia"]::before,
+.aguia-submenu-option.active[data-value="deuteranopia"]::before,
+.aguia-submenu-option.active[data-value="tritanopia"]::before,
+.aguia-submenu-option.active[data-value="achromatopsia"]::before,
+.aguia-submenu-option.active[data-value="none"]::before {
+    border: 2px solid #2271ff !important;
+}
+.aguia-submenu-option .option-text {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    color: #333 !important;
+}
