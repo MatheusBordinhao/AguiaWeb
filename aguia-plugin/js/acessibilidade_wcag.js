@@ -2658,7 +2658,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (iconSpan) iconSpan.innerHTML = renderReadableFontsIcon(1);
                         break;
                     case 2: // OpenDyslexic
-                        textSpan.textContent = 'Fontes Amigável (OpenDyslexic)';
+                        textSpan.textContent = 'Fonte Amigável (OpenDyslexic)';
                         fontsBtn.classList.add('active', 'opendyslexic');
                         if (iconSpan) iconSpan.innerHTML = renderReadableFontsIcon(2);
                         break;
@@ -2682,7 +2682,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 2: // OpenDyslexic
                 AGUIA_SCOPE.classList.add('aguia-opendyslexic-fonts');
-                showStatusMessage('Fontes Amigável (OpenDyslexic) ativadas', 'success');
+                showStatusMessage('Fonte Amigável (OpenDyslexic) ativada', 'success');
                 readableFontsEnabled = true;
                 break;
         }
